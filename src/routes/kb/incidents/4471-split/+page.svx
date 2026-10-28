@@ -1,0 +1,57 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: Maciej Marek
+status: proposed
+reviewed: 2026-10-28
+signature: v1.eyJzdWIiOiI0ODciLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzE4OTc1MiwiZXhwIjoxNzkzMjc2MTUyfQ.xKCjIkbVXbUwnTLs7Xvq7gN6UaEVpuARthFG-LvFWqw
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const issues = {
+    parser: 'https://github.com/Macqq15/mega-what-it-shows/issues/1',
+    hint: 'https://github.com/Macqq15/mega-what-it-shows/issues/2',
+    move: 'https://github.com/Macqq15/mega-what-it-shows/issues/3',
+  };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. The reports merged into it
+hold three problems, and the queued parser fix closes only one of them. Each problem now has a
+ticket of its own.
+
+<Callout kind="warn">
+Fixing the parser leaves two problems open: the booking-v3 form hint, and invites that move by a
+day across time zones. Do not close #4471's reports as fixed until all three tickets are closed.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {issues} />
+
+## How to tell them apart
+
+- **`parser`**: day and month swapped ("Booked for 2 March. The invite says 3 February."). A day-first tenant,
+  any channel except a booking-v3 form. The shared parser reads month first.
+- **`hint`**: the same swap, but only from booking-v3 forms at day-first tenants. The form prints
+  `MM/DD/YYYY` as its hint, people type what it says, and the form reads it day first. The swap
+  happens in the form, so a parser fix does not reach it.
+- **`move`**: no swap at all. The date moves by one day, differs by where the attendee is
+  (Lisbon Tuesday, Toronto Monday), or the invite is stamped before the booking. That is a
+  time-zone fault. The desk read these by hand (`oneDayMove` in the desk notes) and then filed
+  them under `parser` by tenant.
+
+Intake's tag (`parser` / `hint`) is a guess from the reporter's browser, so the table counts by
+tenant and channel instead, with `causes.ts`. Repeated rows in the export count once.
+
+## Why they were merged
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges reports whose subject lines match.
+All three problems arrive with the same subjects ("Wrong day on the invite", "Date is wrong"), so
+subject matching put them in one ticket. Merging by subject needs a new decision record: merge by
+cause, as `causes.ts` already computes it.
+
+<RenderStamp {signature} />
