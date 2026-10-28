@@ -11,6 +11,7 @@
   const rows = $derived(reports as Report[]);
   const merged = $derived(uniqueById(rows).filter((r) => r.mergedInto === ticket));
   const groups = $derived(groupByProblem(merged, tenantOf, notes.oneDayMove));
+  const overlap = $derived(groups.reduce((n, g) => n + g.reports.length, 0) - merged.length);
   const fmt = (n: Record<string, number>) =>
     Object.entries(n)
       .sort((a, b) => b[1] - a[1])
@@ -41,7 +42,7 @@
     {/each}
   </tbody>
   <tfoot>
-    <tr><td>total</td><td class="n">{groups.reduce((n, g) => n + g.reports.length, 0)}</td><td colspan="5"></td></tr>
+    <tr><td>reports</td><td class="n">{merged.length}</td><td colspan="5" class="small">{overlap} are counted twice: under their cause and under <code>move</code></td></tr>
   </tfoot>
 </table>
 

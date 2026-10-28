@@ -41,11 +41,13 @@ day across time zones. Do not close #4471's reports as fixed until all three tic
   happens in the form, so a parser fix does not reach it.
 - **`move`**: no swap at all. The date moves by one day, differs by where the attendee is
   (Lisbon Tuesday, Toronto Monday), or the invite is stamped before the booking. That is a
-  time-zone fault. The desk read these by hand (`oneDayMove` in the desk notes) and then filed
-  them under `parser` by tenant.
+  time-zone fault. The desk read these by hand (`oneDayMove` in the desk notes) and files them
+  under `parser` by tenant.
 
-Intake's tag (`parser` / `hint`) is a guess from the reporter's browser, so the table counts by
-tenant and channel instead, with `causes.ts`. Repeated rows in the export count once.
+The table counts the way the desk's own view does: every report under its cause from
+`causes.ts`, so `parser` includes the one-day moves, and those reports are listed again under
+`move` because a parser fix does not close them. Intake's tag (`parser` / `hint`) is a guess from
+the reporter's browser, so it is not used to count. Repeated rows in the export count once.
 
 ## Why they were merged
 
